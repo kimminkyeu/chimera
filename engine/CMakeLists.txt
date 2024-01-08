@@ -13,7 +13,7 @@ include(build/build_util/macros.cmake)
 
 # -----------------------------------------------------------------------------
 # Avoid having an empty `CMAKE_BUILD_TYPE` : 빌드 타입 명시가 없으면 기본 debug로 설정.
-if (NOT DEFINED CMAKE_BUILD_TYPE)
+if (NOT DEFINED CMAKE_BUILD_TYPE OR CMAKE_BUILD_TYPE STREQUAL "")
   cm_printf(WARN "===== CMAKE_BUILD_TYPE : Unspecified =====")
   cm_printf(WARN "Setting CMAKE_BUILD_TYPE to Debug by default...")
   cm_printf(WARN "for release build, add '-DCMAKE_BUILD_TYPE=Release' ARGS to Cmake...")
@@ -80,11 +80,9 @@ set(LIBS ${LIBS}
 		 # imgui
 )
 
-file(GLOB SOURCE
-	source/core/Application.cpp
+set(SOURCE
+	${CMAKE_SOURCE_DIR}/source/core/Application.cpp
 )
-
-# add_executable(${CMAKE_PROJECT_NAME} ${SOURCE})
 
 # ----------------------------------------------------------------------------
 # Directories for header include
