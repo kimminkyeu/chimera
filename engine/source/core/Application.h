@@ -5,6 +5,11 @@
 // #include "internal/CmUtil.h"
 #include <memory>
 
+#ifdef _CHIMERA_BUILD_DLL
+	#define CHIMERA_API __declspec(dllexport)
+#else
+	#define CHIMERA_API __declspec(dllimport)
+#endif
 // #include "Chimera/Core/Base.h"
 
 // #include "Chimera/Core/Window.h"
@@ -18,7 +23,7 @@
 
 namespace Cm {
 
-	class Application
+	class CHIMERA_API Application
 	{
 	public:
 		Application();

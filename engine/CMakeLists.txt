@@ -95,15 +95,16 @@ set(INC
 )
 
 # Set libraries to link to target
-add_library(${CMAKE_PROJECT_NAME} SHARED ${SOURCE})
+add_library(${CMAKE_PROJECT_NAME} ${SOURCE})
 # remove default library output file's prefix ( default prefix = "lib" )
 # Set CMAKE output directory : 최종 실행파일을 밖으로 빼기 위한 용도
 set_target_properties(${CMAKE_PROJECT_NAME} 
   PROPERTIES 
     PREFIX ""
+    DEFINE_SYMBOL _CHIMERA_BUILD_DLL
     RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/binary
-    RUNTIME_ARCHIVE_DIRECTORY ${CMAKE_SOURCE_DIR}/binary
-    RUNTIME_LIBRARY_DIRECTORY ${CMAKE_SOURCE_DIR}/binary
+    ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/binary
+    LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/binary
 )
 target_include_directories( ${CMAKE_PROJECT_NAME} PUBLIC ${INC} )
 target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE ${LIBS})
