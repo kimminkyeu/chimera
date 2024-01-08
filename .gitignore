@@ -1,3 +1,11 @@
+# Editor files
+.vscode
+.idea
+
+# Build output file
+engine/build/intermediate/* 
+scop/build/intermediate/*
+
 # Prerequisites
 *.d
 
