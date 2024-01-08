@@ -96,14 +96,12 @@ set(INC
 
 # Set libraries to link to target
 add_library(${CMAKE_PROJECT_NAME} SHARED ${SOURCE})
-# remove default library output file's prefix ( default prefix = "lib" )
-# Set CMAKE output directory : 최종 실행파일을 밖으로 빼기 위한 용도
 set_target_properties(${CMAKE_PROJECT_NAME} 
   PROPERTIES 
+    # remove default library output file's prefix ( default prefix = "lib" )
     PREFIX ""
-    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/binary
-    RUNTIME_ARCHIVE_DIRECTORY ${CMAKE_SOURCE_DIR}/binary
-    RUNTIME_LIBRARY_DIRECTORY ${CMAKE_SOURCE_DIR}/binary
+    # Set CMAKE output directory : 최종 실행파일을 밖으로 빼기 위한 용도
+    LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/binary
 )
 target_include_directories( ${CMAKE_PROJECT_NAME} PUBLIC ${INC} )
 target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE ${LIBS})
