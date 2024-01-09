@@ -1,7 +1,7 @@
-#include "Chimera.h"
+#include <iostream>
 #include <memory>
-// #include "Chimera/Core/EntryPoint.h"
-// #include "EditorLayer.h"
+
+#include "Chimera.h"
 
 class Scop : public Cm::Application
 {

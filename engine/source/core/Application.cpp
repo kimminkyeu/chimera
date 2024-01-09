@@ -2,16 +2,8 @@
 
 #include <iostream>
 
-#include "CmUtil.h"
+#include "internal/CmUtil.h"
 #include "core/Application.h"
-
-// #include "Chimera/Core/Log.h"
-
-// #include "Chimera/Renderer/Renderer.h"
-// #include "Chimera/Scripting/ScriptEngine.h"
-
-// #include "Chimera/Core/Input.h"
-// #include "Chimera/Utils/PlatformUtils.h"
 
 namespace Cm {
 
