@@ -98,8 +98,10 @@ set(INC
 # Set libraries to link to target
 if (DEFINED BUILD_SHARED_LIBS AND BUILD_SHARED_LIBS STREQUAL "ON")
   add_library(${CMAKE_PROJECT_NAME} SHARED ${SOURCE})
+  set(CM_SHARED_LIB TRUE)
 elseif()
   add_library(${CMAKE_PROJECT_NAME} STATIC ${SOURCE})
+  set(CM_STATIC_LIB TRUE)
 endif()
 
 set_target_properties(${CMAKE_PROJECT_NAME} 
@@ -128,17 +130,21 @@ target_include_directories( ${CMAKE_PROJECT_NAME}
                             $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/binary>
                             $<INSTALL_INTERFACE:include>
                            )
-file( GLOB LIB_FILES              ${CMAKE_SOURCE_DIR}/binary/* )
 set( TARGETS_EXPORT_NAME          ${CMAKE_PROJECT_NAME}Targets )
 # ************************************************************************************
 set( HEADERS                      include/Chimera.h )
 
+if ( CM_SHARED_LIB )
+  set( CHIMERA_LIBRARY_NAME ${CMAKE_PROJECT_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX} ) # Ex.ChimeraEngineCore.dylib
+elseif()
+  set( CHIMERA_LIBRARY_NAME ${CMAKE_PROJECT_NAME}${CMAKE_STATIC_LIBRARY_SUFFIX} ) # Ex.ChimeraEngineCore.a
+endif()
 
 set( CHIMERA_INSTALL_LOCATION           ${CMAKE_INSTALL_PREFIX}/${CMAKE_PROJECT_NAME} )
 # ************************************************************************************
 # 아래 두 변수는 Config.cmake.in를 통해 외부로 export됩니다.
 set( CHIMERA_EXPORT_INCLUDE_DIR   ${INC} )        # --> ChimeraEngineCore_INCLUDE_DIR
-set( CHIMERA_EXPORT_LIBRARIES     ${LIB_FILES} )  # --> ChimeraEngineCore_LIBRARIES
+set( CHIMERA_EXPORT_LIBRARIES     ${CMAKE_SOURCE_DIR}/binary/${CHIMERA_LIBRARY_NAME} )  # --> ChimeraEngineCore_LIBRARIES
 # ************************************************************************************
 
 # library 설치
