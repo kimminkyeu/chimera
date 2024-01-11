@@ -7,6 +7,7 @@ include("${CMAKE_CURRENT_LIST_DIR}/@TARGETS_EXPORT_NAME@.cmake")
 # find_package(...)를 통해 패키지 연결시, 자동으로 아래의 변수가 설정됩니다.
 SET(  @CMAKE_PROJECT_NAME@_INCLUDE_DIR    @CHIMERA_EXPORT_INCLUDE_DIR@  )
 SET(  @CMAKE_PROJECT_NAME@_LIBRARIES      @CHIMERA_EXPORT_LIBRARIES@    )
+SET(  @CMAKE_PROJECT_NAME@_SHARED_LIB     @CM_SHARED_LIB@               ) 
 
 # How to Import
 

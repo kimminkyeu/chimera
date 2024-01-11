@@ -99,18 +99,37 @@ set(INC
 if (DEFINED BUILD_SHARED_LIBS AND BUILD_SHARED_LIBS STREQUAL "ON")
   add_library(${CMAKE_PROJECT_NAME} SHARED ${SOURCE})
   set(CM_SHARED_LIB TRUE)
+  set_target_properties(${CMAKE_PROJECT_NAME}
+    PROPERTIES
+    DEFINE_SYMBOL "_CHIMERA_BUILD_DLL"
+    )
 elseif()
   add_library(${CMAKE_PROJECT_NAME} STATIC ${SOURCE})
   set(CM_STATIC_LIB TRUE)
 endif()
 
 set_target_properties(${CMAKE_PROJECT_NAME} 
-  PROPERTIES 
-    # remove default library output file's prefix ( default prefix = "lib" )
-    PREFIX ""
-    # Set CMAKE output directory : 최종 실행파일을 밖으로 빼기 위한 용도
-    LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/binary
+PROPERTIES 
+# remove default library output file's prefix ( default prefix = "lib" )
+PREFIX ""
+# Set CMAKE output directory : 최종 실행파일을 밖으로 빼기 위한 용도
+LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/binary
+ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/binary
+RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/binary
 )
+
+# For Visual Studio
+if (MSVC)
+  set_target_properties(${CMAKE_PROJECT_NAME} 
+  PROPERTIES 
+  LIBRARY_OUTPUT_DIRECTORY_DEBUG ${CMAKE_SOURCE_DIR}/binary
+  LIBRARY_OUTPUT_DIRECTORY_RELEASE ${CMAKE_SOURCE_DIR}/binary
+  ARCHIVE_OUTPUT_DIRECTORY_DEBUG ${CMAKE_SOURCE_DIR}/binary
+  ARCHIVE_OUTPUT_DIRECTORY_RELEASE ${CMAKE_SOURCE_DIR}/binary
+  RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_SOURCE_DIR}/binary
+  RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_SOURCE_DIR}/binary
+  )
+endif (MSVC)
 
 # Chimera 프로젝트 내부에서 사용하는 용도의 헤더 인클루드 경로임으로, PRIVATE으로 작성.
 target_include_directories( ${CMAKE_PROJECT_NAME} PRIVATE ${INC} )
@@ -135,9 +154,13 @@ set( TARGETS_EXPORT_NAME          ${CMAKE_PROJECT_NAME}Targets )
 set( HEADERS                      include/Chimera.h )
 
 if ( CM_SHARED_LIB )
-  set( CHIMERA_LIBRARY_NAME ${CMAKE_PROJECT_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX} ) # Ex.ChimeraEngineCore.dylib
+  if (WIN32)
+    set( CHIMERA_LIBRARY_NAME ${CMAKE_PROJECT_NAME}${CMAKE_STATIC_LIBRARY_SUFFIX}) # Ex.ChimeraEngineCore.dll
+  else()
+    set( CHIMERA_LIBRARY_NAME ${CMAKE_PROJECT_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX}) # Ex.ChimeraEngineCore.dylib
+  endif (WIN32)
 elseif()
-  set( CHIMERA_LIBRARY_NAME ${CMAKE_PROJECT_NAME}${CMAKE_STATIC_LIBRARY_SUFFIX} ) # Ex.ChimeraEngineCore.a
+  set( CHIMERA_LIBRARY_NAME ${CMAKE_PROJECT_NAME}/${CMAKE_STATIC_LIBRARY_SUFFIX} ) # Ex.ChimeraEngineCore.a or .lib
 endif()
 
 set( CHIMERA_INSTALL_LOCATION           ${CMAKE_INSTALL_PREFIX}/${CMAKE_PROJECT_NAME} )

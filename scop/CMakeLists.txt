@@ -47,4 +47,11 @@ target_include_directories( ${CMAKE_PROJECT_NAME} PUBLIC ${INC} )
   target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC ${ChimeraEngineCore_INCLUDE_DIR})
 # -----------------------------------------------------------------------------
 
+if (ChimeraEngineCore_SHARED_LIB)
+    MESSAGE(STATUS "Copying ChimeraEngineCore.dll to ${CMAKE_PROJECT_NAME} build directory")
+    add_custom_command(TARGET ${CMAKE_PROJECT_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    "${CMAKE_SOURCE_DIR}/../engine/binary/ChimeraEngineCore.dll"
+    $<TARGET_FILE_DIR:${CMAKE_PROJECT_NAME}>)
+endif(ChimeraEngineCore_SHARED_LIB)
 
