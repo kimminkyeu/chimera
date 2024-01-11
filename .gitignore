@@ -5,7 +5,7 @@
 # Build output file
 engine/build/intermediate/* 
 scop/build/intermediate/*
-*/out
+binary
 
 # Prerequisites
 *.d
