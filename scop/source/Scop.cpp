@@ -1,28 +1,18 @@
-#include <iostream>
-#include <memory>
-
 #include "Chimera.h"
 
-class Scop : public Cm::Application
-{
+class Scop : public Cm::Application {
 public:
-	Scop(/* ... */)
-		: Application()
-	{
-		std::cout << "hello scope!" << std::endl;
-		// PushLayer(new EditorLayer());
-	}
+  Scop() : Application() { std::cout << "hello scope!" << std::endl; }
 };
 
-std::unique_ptr<Cm::Application> Cm::CreateApplication(/* specification */)
-{
-	return std::make_unique<Scop>(/* specification */);
+std::unique_ptr<Cm::Application> Cm::CreateApplication() {
+  return std::make_unique<Scop>();
 }
 
-int main(int ac, char** av) 
-{
-    auto scop = Cm::CreateApplication();
-	scop->Run();
-	// delete scop; 
-    return 0;
+int main(int ac, char** av) {
+  Cm::Logger::Init();
+  CM_CLIENT_INFO("Scop Start");
+  auto scop = Cm::CreateApplication();
+  scop->Run();
+  return 0;
 }
