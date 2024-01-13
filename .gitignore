@@ -9,6 +9,7 @@ binary
 # external library
 engine/external/spdlog
 engine/external/glfw
+engine/external/glad
 # Prerequisites
 *.d
 
