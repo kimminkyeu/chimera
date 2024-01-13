@@ -8,6 +8,7 @@ scop/build/intermediate/*
 binary
 # external library
 engine/external/spdlog
+engine/external/glfw
 # Prerequisites
 *.d
 
