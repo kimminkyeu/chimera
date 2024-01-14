@@ -5,27 +5,7 @@
 #ifndef INTERN_LIBCM_SAL_H
 #define INTERN_LIBCM_SAL_H
 
-/*
-		Visual Studio       _MSC_VER
-		gcc                 __GNUC__
-		clang               __clang__
-		emscripten          __EMSCRIPTEN__ (for asm.js and webassembly)
-		MinGW 32            __MINGW32__
-		MinGW-w64 32bit     __MINGW32__
-		MinGW-w64 64bit     __MINGW64__
-*/
-
-#if defined(__clang__)
-    #define CM_COMPILER_CLANG
-#elif defined(__GNUC__) || defined(__GNUG__)
-    #define CM_COMPILER_GCC
-#elif defined(_MSC_VER)
-    #define CM_COMPILER_MSVC
-#elif defined(__MINGW32__) || defined(__MINGW64__)
-	// ...
-#endif
-
-
+#include "PlatformDetection.h"
 // Microsoft source-code annotation language
 // ------------------------------------------------
 // MSVC를 쓰지 않아도 Microsoft source-code annotation language (SAL)를 활용하기 위한 헤더.
@@ -48,21 +28,6 @@
 #   undef _Check_return_void_
 #endif
 #define _Check_return_void_ 
-
-// ------------------------------------
-#ifdef _Deprecated_
-#   undef _Deprecated_
-#endif
-#ifdef _Deprecated__
-#   undef _Deprecated__
-#endif
-#if __has_attribute(deprecated)
-#   define _Deprecated_                     [[deprecated]]
-#   define _Deprecated__(reason_string)     [[deprecated(reason_string)]]
-#else
-#   define _Deprecated_
-#   define _Deprecated__(reason_string)
-#endif
 
 // ------------------------------------
 #ifdef _Fallthrough_
