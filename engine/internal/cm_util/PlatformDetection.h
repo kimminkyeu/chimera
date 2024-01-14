@@ -53,7 +53,6 @@
 # error "Android is not supported!"
 #elif defined(__linux__)
 # define CM_PLATFORM_LINUX
-# error "Linux is not supported!"
 #else
 # error "Unknown platform!" /* Unknown compiler/platform */
 #endif
