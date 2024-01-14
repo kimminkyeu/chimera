@@ -10,6 +10,8 @@ std::unique_ptr<Cm::Application> Cm::CreateApplication() {
 }
 
 int main(int ac, char** av) {
+	(void)ac;
+	(void)av;
   Cm::Logger::Init();
   CM_CLIENT_INFO("Scop Start");
   auto scop = Cm::CreateApplication();
