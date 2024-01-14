@@ -47,6 +47,18 @@ function(cm_printf)
   endif()
 endfunction()
 
+function(cm_printf_important
+  type
+  message
+  )
+  string(LENGTH ${message} LEN)
+  MATH(EXPR LEN "${LEN}+8")
+  string(REPEAT "▁" ${LEN} BORDER_TOP)
+  cm_printf(${type} ${BORDER_TOP})
+  cm_printf(${type} "▏   ${message}   ▕")
+  string(REPEAT "▔" ${LEN} BORDER_BOTTOM)
+  cm_printf(${type} ${BORDER_BOTTOM})
+endfunction()
 
 # --------------------------------------------------------------------
 # 
