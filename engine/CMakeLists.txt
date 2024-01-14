@@ -14,12 +14,12 @@ include(build/build_util/macros.cmake)
 # -----------------------------------------------------------------------------
 # Avoid having an empty `CMAKE_BUILD_TYPE` : 빌드 타입 명시가 없으면 기본 debug로 설정.
 if (NOT DEFINED CMAKE_BUILD_TYPE OR CMAKE_BUILD_TYPE STREQUAL "")
-  cm_printf(WARN "===== CMAKE_BUILD_TYPE : Unspecified =====")
-  cm_printf(WARN "Setting CMAKE_BUILD_TYPE to Debug by default...")
-  cm_printf(WARN "for release build, add '-DCMAKE_BUILD_TYPE=Release' ARGS to Cmake...")
+  cm_printf_important(WARN "CMAKE BUILD TYPE : Unspecified")
+  cm_printf(WARN "  - Setting CMAKE_BUILD_TYPE to Debug by default...")
+  cm_printf(WARN "  - For release build, please add '-DCMAKE_BUILD_TYPE=Release' ARGS to Cmake...")
   set(CMAKE_BUILD_TYPE Debug) # Default build type.
 else()
-  cm_printf(STATUS "===== CMAKE_BUILD_TYPE : ${CMAKE_BUILD_TYPE} =====")
+  cm_printf_important(WARN "CMAKE BUILD TYPE : ${CMAKE_BUILD_TYPE}")
 endif()
 
 # -----------------------------------------------------------------------------
@@ -29,12 +29,13 @@ set(CMAKE_WARN_DEPRECATED OFF CACHE BOOL "" FORCE)
 # Generate a compile_commands.json in your build directory that lists every file and it's compile command.
 # -----------------------------------------------------------------------------
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-cm_printf(STATUS "List of every file and it's compile command is saved to 'build/compile_commands.json'")
+cm_printf(STATUS "Platform : ${CMAKE_HOST_SYSTEM_NAME}-${CMAKE_HOST_SYSTEM_VERSION}")
+cm_printf(STATUS "Compiler : ${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER_VERSION}")
+cm_printf(STATUS "Compile commands are saved to \"build/compile_commands.json\"")
 
 # -----------------------------------------------------------------------------
 # Compiler warning level setting
 #   - https://stackoverflow.com/questions/2368811/how-to-set-warning-level-in-cmake
-cm_printf(STATUS "Compiler: ${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER_VERSION}")
 if (MSVC)
     if (CMAKE_CXX_FLAGS MATCHES "/W[0-4]") # Force to always compile with W4
         string(REGEX REPLACE "/W[0-4]" "/W4" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
@@ -86,6 +87,7 @@ ExternalProject_Add(
   GIT_REPOSITORY "https://github.com/gabime/spdlog.git"
   GIT_TAG "v1.x"
   INSTALL_DIR ${CMAKE_SOURCE_DIR}/external/spdlog
+  INSTALL_COMMAND "" # hide dep_spdlog build message from terminal
   CMAKE_ARGS
       -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>
 )
@@ -112,24 +114,40 @@ set(SOURCE
 
 # Directories for header include
 set(INC
-  ${CMAKE_SOURCE_DIR}
-  ${CMAKE_SOURCE_DIR}/source
-  ${CMAKE_SOURCE_DIR}/include # scop에서 Config.h의 위치를 찾을 때, 여기 설정된 경로가 scop의 find_package를 통해 설정된다.
-  ${CMAKE_SOURCE_DIR}/external/spdlog/include
+        ${CMAKE_SOURCE_DIR}
+        ${CMAKE_SOURCE_DIR}/source
+        ${CMAKE_SOURCE_DIR}/external/spdlog/include
 )
-
 
 # ----------------------------------------------------------------------------
 # Set libraries to link to target
 if (DEFINED BUILD_SHARED_LIBS AND BUILD_SHARED_LIBS STREQUAL "ON")
   add_library(${CMAKE_PROJECT_NAME} SHARED ${SOURCE})
   set(CM_SHARED_LIB TRUE)
+  set(CHIMERA_LIBRARY_NAME ${CMAKE_PROJECT_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX}) # Ex.ChimeraEngineCore.dylib
+  cm_printf_important(WARN "LIBRARY OUTPUT : Dynamic Library - ${CHIMERA_LIBRARY_NAME}")
 else()
   add_library(${CMAKE_PROJECT_NAME} STATIC ${SOURCE})
   set(CM_STATIC_LIB TRUE)
+  set(CHIMERA_LIBRARY_NAME ${CMAKE_PROJECT_NAME}${CMAKE_STATIC_LIBRARY_SUFFIX}) # Ex.ChimeraEngineCore.a
+  cm_printf_important(WARN "LIBRARY OUTPUT : Static Library - ${CHIMERA_LIBRARY_NAME}")
 endif()
 
-set_target_properties(${CMAKE_PROJECT_NAME} 
+# ----------------------------------------------------------------------------
+# Automatic API export macro generation
+# - 플랫폼에 따라 자동 생성 + Static Lib일 경우에는 빈 매크로로 만들어 준다
+# - https://cmake.org/cmake/help/latest/module/GenerateExportHeader.html
+include(GenerateExportHeader)
+generate_export_header(${CMAKE_PROJECT_NAME}
+        BASE_NAME               chimera_api
+        PREFIX_NAME             CHIMERA_
+        EXPORT_MACRO_NAME       API
+        NO_EXPORT_MACRO_NAME    HIDE_FROM_API
+        DEPRECATED_MACRO_NAME   DEPRECATED
+)
+target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+
+set_target_properties(${CMAKE_PROJECT_NAME}
   PROPERTIES 
     # remove default library output file's prefix ( default prefix = "lib" )
     PREFIX ""
@@ -137,9 +155,9 @@ set_target_properties(${CMAKE_PROJECT_NAME}
     LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/binary
 )
 
-#Pre-Compiled header
-
+# Pre-Compiled header
 target_precompile_headers(${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/source/core/Pch.h)
+
 # Chimera 프로젝트 내부에서 사용하는 용도의 헤더 인클루드 경로임으로, PRIVATE으로 작성.
 target_include_directories( ${CMAKE_PROJECT_NAME} PRIVATE ${INC} )
 target_link_directories(${CMAKE_PROJECT_NAME} PRIVATE ${LIBS_DIR})
@@ -159,15 +177,11 @@ target_include_directories( ${CMAKE_PROJECT_NAME}
                             $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/binary>
                             $<INSTALL_INTERFACE:include>
                            )
-set( TARGETS_EXPORT_NAME          ${CMAKE_PROJECT_NAME}Targets )
-# ************************************************************************************
-set( HEADERS                      include/Chimera.h )
-
-if ( CM_SHARED_LIB )
-  set( CHIMERA_LIBRARY_NAME ${CMAKE_PROJECT_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX} ) # Ex.ChimeraEngineCore.dylib
-elseif()
-  set( CHIMERA_LIBRARY_NAME ${CMAKE_PROJECT_NAME}${CMAKE_STATIC_LIBRARY_SUFFIX} ) # Ex.ChimeraEngineCore.a
-endif()
+set( TARGETS_EXPORT_NAME ${CMAKE_PROJECT_NAME}Targets )
+set( HEADERS_TO_INSTALL_AT_SYSTEM
+        ${PROJECT_BINARY_DIR}/chimera_api_export.h
+        include/Chimera.h
+)
 
 set( CHIMERA_INSTALL_LOCATION           ${CMAKE_INSTALL_PREFIX}/${CMAKE_PROJECT_NAME} )
 # ************************************************************************************
@@ -183,12 +197,11 @@ install(TARGETS ${CMAKE_PROJECT_NAME}
         LIBRARY   DESTINATION ${CHIMERA_INSTALL_LOCATION}/lib
         ARCHIVE   DESTINATION ${CHIMERA_INSTALL_LOCATION}/lib
         INCLUDES  DESTINATION ${CHIMERA_INSTALL_LOCATION}/include
-        PUBLIC_HEADER  DESTINATION include/Chimera.h
 )
 
 # install include header to destination.
-# cmake --install로 Chimera를 시스템 설치 시 헤더 경로.
-# install(FILES ${HEADERS} DESTINATION ${CHIMERA_INSTALL_LOCATION}/include)
+install(FILES
+        ${HEADERS_TO_INSTALL_AT_SYSTEM} DESTINATION ${CHIMERA_INSTALL_LOCATION}/include )
 
 # install export target and config for find_package
 install(EXPORT ${TARGETS_EXPORT_NAME}
