@@ -6,7 +6,8 @@
 engine/build/intermediate/* 
 scop/build/intermediate/*
 binary
-
+# external library
+engine/external/spdlog
 # Prerequisites
 *.d
 

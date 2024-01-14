@@ -77,13 +77,37 @@ if(APPLE)
 	set(LIBS ${LIBS} ${APPLE_LIBS})
 endif(APPLE)
 
-set(LIBS ${LIBS}
+
+# use ExternalProject to download & build external library (ex) spdlog, glfw....)
+include(ExternalProject)
+
+ExternalProject_Add(
+  dep_spdlog
+  GIT_REPOSITORY "https://github.com/gabime/spdlog.git"
+  GIT_TAG "v1.x"
+  INSTALL_DIR ${CMAKE_SOURCE_DIR}/external/spdlog
+  CMAKE_ARGS
+      -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>
+)
+
+set(LIBS ${LIBS} 
+    spdlog
+)
+
+#의존성 라이브러리 변수 (외부 라이브러리이기 때문에 먼저 빌드해야함)
+set(DEP_LIBS ${DEP_LIBS}
+    dep_spdlog
 		 # glfw
 		 # imgui
 )
 
+set(LIBS_DIR ${LIBS_DIR}
+    ${CMAKE_SOURCE_DIR}/external/spdlog/lib
+)
+
 set(SOURCE
 	${CMAKE_SOURCE_DIR}/source/core/Application.cpp
+	${CMAKE_SOURCE_DIR}/source/core/Logger.cpp
 )
 
 # Directories for header include
@@ -91,6 +115,7 @@ set(INC
   ${CMAKE_SOURCE_DIR}
   ${CMAKE_SOURCE_DIR}/source
   ${CMAKE_SOURCE_DIR}/include # scop에서 Config.h의 위치를 찾을 때, 여기 설정된 경로가 scop의 find_package를 통해 설정된다.
+  ${CMAKE_SOURCE_DIR}/external/spdlog/include
 )
 
 
@@ -112,10 +137,14 @@ set_target_properties(${CMAKE_PROJECT_NAME}
     LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/binary
 )
 
+#Pre-Compiled header
+
+target_precompile_headers(${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/source/core/Pch.h)
 # Chimera 프로젝트 내부에서 사용하는 용도의 헤더 인클루드 경로임으로, PRIVATE으로 작성.
 target_include_directories( ${CMAKE_PROJECT_NAME} PRIVATE ${INC} )
+target_link_directories(${CMAKE_PROJECT_NAME} PRIVATE ${LIBS_DIR})
 target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE ${LIBS}) #의존 라이브러리를 숨긴다.
-
+add_dependencies(${CMAKE_PROJECT_NAME} ${DEP_LIBS})
 
 
 # ----------------------------------------------------------------------------
