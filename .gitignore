@@ -1,6 +1,7 @@
 # Editor files
 .vscode
 .idea
+cmake-build-debug
 
 # Build output file
 engine/build/intermediate/* 
