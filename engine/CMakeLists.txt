@@ -114,7 +114,9 @@ set(SOURCE
 
 # Directories for header include
 set(INC
+        ${CMAKE_BINARY_DIR} # for chimera_api_export.h
         ${CMAKE_SOURCE_DIR}
+        ${CMAKE_SOURCE_DIR}/include
         ${CMAKE_SOURCE_DIR}/source
         ${CMAKE_SOURCE_DIR}/external/spdlog/include
 )
@@ -145,7 +147,6 @@ generate_export_header(${CMAKE_PROJECT_NAME}
         NO_EXPORT_MACRO_NAME    HIDE_FROM_API
         DEPRECATED_MACRO_NAME   DEPRECATED
 )
-target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 
 set_target_properties(${CMAKE_PROJECT_NAME}
   PROPERTIES 
