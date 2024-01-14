@@ -1,4 +1,6 @@
 #pragma once
+#ifndef CHIMERA_ENGINE_SOURCE_CORE_PCH_H
+#define CHIMERA_ENGINE_SOURCE_CORE_PCH_H
 
 #include <algorithm>
 #include <functional>
@@ -13,3 +15,5 @@
 #include <vector>
 
 #include "Logger.h"
+
+#endif//CHIMERA_ENGINE_SOURCE_CORE_PCH_H
