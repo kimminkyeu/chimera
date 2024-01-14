@@ -142,7 +142,6 @@ StatementMacros:
 TabWidth:        8
 UseCRLF:         false
 UseTab:          Never
-MaxLineLength:   80
 WhitespaceSensitiveMacros:
   - STRINGIZE
   - PP_STRINGIZE
