@@ -87,10 +87,15 @@ ExternalProject_Add(
   GIT_REPOSITORY "https://github.com/gabime/spdlog.git"
   GIT_TAG "v1.x"
   INSTALL_DIR ${CMAKE_SOURCE_DIR}/external/spdlog
-  INSTALL_COMMAND "" # hide dep_spdlog build message from terminal
   CMAKE_ARGS
       -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>
+  LOG_CONFIGURE ON
+  LOG_INSTALL ON
+  LOG_BUILD ON
+  LOG_OUTPUT_ON_FAILURE ON
 )
+ExternalProject_Get_property(dep_spdlog SOURCE_DIR)
+cm_printf("Spdlog path : ${SOURCE_DIR}")
 
 set(LIBS ${LIBS} 
     spdlog
