@@ -1,12 +1,16 @@
 #pragma once
+#ifndef CHIMERA_ENGINE_SOURCE_CORE_LOGGER_H
+#define CHIMERA_ENGINE_SOURCE_CORE_LOGGER_H
 
-#include "core/Pch.h"
 #include "spdlog/spdlog.h"
 #include "spdlog/fmt/ostr.h"
 #include "spdlog/sinks/stdout_color_sinks.h"
 
+#include "core/Pch.h"
+#include "internal/CmUtil.h"
+
 namespace Cm {
-class Logger {
+class CHIMERA_API Logger {
 public:
   static void Init();
 
@@ -36,3 +40,5 @@ private:
 #define CM_CLIENT_ERROR(...) ::Cm::Logger::GetClientLogger()->error(__VA_ARGS__)
 #define CM_CLIENT_FATAL(...) ::Cm::Logger::GetClientLogger()->fatal(__VA_ARGS__)
 } // namespace Cm
+
+#endif//CHIMERA_ENGINE_SOURCE_CORE_LOGGER_H

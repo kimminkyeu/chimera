@@ -2,8 +2,8 @@
 #ifndef CHIMERA_ENGINE_SOURCE_CORE_APPLICATION_H
 #define CHIMERA_ENGINE_SOURCE_CORE_APPLICATION_H
 
-// #include "internal/CmUtil.h"
 #include <memory>
+#include "internal/CmUtil.h"
 
 // #include "Chimera/Core/Base.h"
 
@@ -18,7 +18,7 @@
 
 namespace Cm {
 
-	class Application
+	class CHIMERA_API Application
 	{
 	public:
 		Application();
